@@ -271,7 +271,7 @@ module Pod
           accessor.resources.flat_map { |res| "${PODS_ROOT}/#{res.relative_path_from(sandbox.project.path.dirname)}" }
         end
         resource_bundles = accessors.flat_map do |accessor|
-          prefix = Generator::XCConfig::XCConfigHelper::CONFIGURATION_BUILD_DIR_VARIABLE
+          prefix = BuildSettings::CONFIGURATION_BUILD_DIR_VARIABLE
           prefix = configuration_build_dir unless accessor.spec.test_specification?
           accessor.resource_bundles.keys.map { |name| "#{prefix}/#{name.shellescape}.bundle" }
         end
@@ -531,7 +531,7 @@ module Pod
     #
     # @return [String] The absolute path to the configuration build dir
     #
-    def configuration_build_dir(dir = Generator::XCConfig::XCConfigHelper::CONFIGURATION_BUILD_DIR_VARIABLE)
+    def configuration_build_dir(dir = BuildSettings::CONFIGURATION_BUILD_DIR_VARIABLE)
       "#{dir}/#{label}"
     end
 
@@ -540,7 +540,7 @@ module Pod
     #
     # @return [String] The absolute path to the build product
     #
-    def build_product_path(dir = Generator::XCConfig::XCConfigHelper::CONFIGURATION_BUILD_DIR_VARIABLE)
+    def build_product_path(dir = BuildSettings::CONFIGURATION_BUILD_DIR_VARIABLE)
       "#{configuration_build_dir(dir)}/#{product_name}"
     end
 
@@ -605,6 +605,10 @@ module Pod
       target_definition.dependencies.select do |dependency|
         Specification.root_name(dependency.name) == pod_name
       end
+    end
+
+    def create_build_settings
+      BuildSettings::Pod.new(self, false)
     end
   end
 end
